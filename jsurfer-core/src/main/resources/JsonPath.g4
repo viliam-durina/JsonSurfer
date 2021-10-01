@@ -19,7 +19,7 @@ COMMA: ',';
 indexes: OPEN_SQ_BRACKET NUM (TO NUM)? ( COMMA NUM (TO NUM)? ) * CLOSE_SQ_BRACKET ;
 slicing: '[' NUM? COLON NUM? ']';
 COLON : ':';
-childNode: '.' KEY ;
+childNode: '.' (KEY | QUOTED_STRING) ;
 childrenNode: '[' QUOTED_STRING ( ',' QUOTED_STRING )* ']' ;
 filter: '[?(' filterExpr ')]';
 filterExpr : NegationOperator '(' filterExpr ')'
