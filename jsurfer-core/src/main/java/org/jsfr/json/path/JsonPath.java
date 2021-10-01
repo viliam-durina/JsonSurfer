@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class JsonPath implements Iterable<PathOperator> {
 
@@ -103,8 +105,8 @@ public class JsonPath implements Iterable<PathOperator> {
             return this;
         }
 
-        public Builder indexes(Integer... indexes) {
-            jsonPath.push(new ArrayIndexes(new HashSet<Integer>(Arrays.asList(indexes))));
+        public Builder indexes(Set<Integer> indexes, TreeMap<Integer, Integer> ranges) {
+            jsonPath.push(new ArrayIndexes(indexes, ranges));
             return this;
         }
 

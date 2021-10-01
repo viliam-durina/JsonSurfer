@@ -29,11 +29,22 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.jsfr.json.filter.*;
+import org.jsfr.json.filter.EqualityBoolPredicate;
+import org.jsfr.json.filter.EqualityNumPredicate;
+import org.jsfr.json.filter.EqualityStrPredicate;
+import org.jsfr.json.filter.ExistencePredicate;
+import org.jsfr.json.filter.FilterBuilder;
+import org.jsfr.json.filter.GreaterThanNumPredicate;
+import org.jsfr.json.filter.LessThanNumPredicate;
+import org.jsfr.json.filter.MatchRegexPredicate;
 import org.jsfr.json.path.JsonPath;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 /**
@@ -99,12 +110,32 @@ public class JsonPathCompiler extends JsonPathBaseVisitor<Void> {
 
     @Override
     public Void visitIndexes(JsonPathParser.IndexesContext ctx) {
-        int i = 0;
-        Integer[] keys = new Integer[ctx.NUM().size()];
-        for (TerminalNode key : ctx.NUM()) {
-            keys[i++] = Integer.parseInt(key.getText());
+        Set<Integer> indexes = new HashSet<>();
+        TreeMap<Integer, Integer> ranges = new TreeMap<>();
+        List<ParseTree> children = ctx.children;
+        assert ((TerminalNode) children.get(0)).getSymbol().getType() == JsonPathParser.OPEN_SQ_BRACKET;
+        assert ((TerminalNode) children.get(children.size() - 1)).getSymbol().getType() == JsonPathParser.CLOSE_SQ_BRACKET;
+
+        for (int i = 1; i < children.size() - 1; i++) {
+            if (((TerminalNode) children.get(i)).getSymbol().getType() == JsonPathParser.COMMA) {
+                continue;
+            }
+            int index = Integer.parseInt(children.get(i).getText());
+            if (i + 1 < children.size() && ((TerminalNode) children.get(i + 1)).getSymbol().getType() == JsonPathParser.TO) {
+                i += 2;
+                int rangeEnd = Integer.parseInt(children.get(i).getText());
+                if (rangeEnd < index) {
+                    // TODO exception type?
+                    // TODO negative indexes?
+                    throw new RuntimeException("Array subscript invalid range");
+                }
+                ranges.put(index, rangeEnd);
+            } else {
+                indexes.add(index);
+            }
         }
-        currentPathBuilder().indexes(keys);
+
+        currentPathBuilder().indexes(indexes, ranges);
         return super.visitIndexes(ctx);
     }
 

@@ -1,4 +1,4 @@
-// Generated from JsonPath.g4 by ANTLR 4.7.2
+// Generated from C:/work/JsonSurfer/jsurfer-core/src/main/resources\JsonPath.g4 by ANTLR 4.9.1
 
 package org.jsfr.json.compiler;
 
