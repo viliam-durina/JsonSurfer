@@ -29,6 +29,7 @@ import org.hamcrest.CustomMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.jsfr.json.compiler.JsonPathCompiler;
+import org.jsfr.json.path.JsonPath;
 import org.jsfr.json.provider.JavaCollectionProvider;
 import org.jsfr.json.provider.JsonProvider;
 import org.junit.Test;
@@ -41,6 +42,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -1048,4 +1050,21 @@ public abstract class JsonSurferTest {
         assertEquals("The Lord of the Rings", box1.get());
     }
 
+    @Test
+    public void test_sqlArrayRange() throws Exception {
+        JsonPath path = JsonPathCompiler.compile("$[1 to 2]");
+        Collector collector = surfer.collector(read("array.json"));
+        ValueBox<Collection<Object>> box = collector.collectAll(path, Object.class);
+        collector.exec();
+        assertEquals(asList(8.88, true), box.get());
+    }
+
+    @Test
+    public void test_sqlPropertyQuoting() throws Exception {
+        JsonPath path = JsonPathCompiler.compile("$.\"store\".\"book\"[0].\"author\"");
+        Collector collector = surfer.collector(read("sample.json"));
+        ValueBox<String> box = collector.collectOne(path, String.class);
+        collector.exec();
+        assertEquals("Nigel Rees", box.get());
+    }
 }

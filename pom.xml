@@ -181,6 +181,7 @@
         <module>jsurfer-core</module>
         <module>jsurfer-gson</module>
         <module>jsurfer-jackson</module>
+        <module>jsurfer-jackson-jr</module>
         <module>jsurfer-jsonsimple</module>
         <module>jsurfer-fastjson</module>
         <module>jsurfer-all</module>

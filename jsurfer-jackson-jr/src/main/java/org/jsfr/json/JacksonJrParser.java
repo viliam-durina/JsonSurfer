@@ -24,7 +24,6 @@
 
 package org.jsfr.json;
 
-import com.fasterxml.jackson.core.FormatSchema;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -35,7 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
-public class JacksonParser implements JsonParserAdapter {
+public class JacksonJrParser implements JsonParserAdapter {
 
     private static class JacksonNonblockingParser extends JacksonResumableParser implements NonBlockingParser {
 
@@ -197,7 +196,7 @@ public class JacksonParser implements JsonParserAdapter {
                         break;
                     case VALUE_EMBEDDED_OBJECT:
                     default:
-                        throw new IllegalStateException("Unexpected token: " + token);
+                        throw new IllegalStateException("Unexpected token");
                 }
             }
             if (context.getConfig().isCloseParserOnStop() && context.isStopped()) {
@@ -207,20 +206,14 @@ public class JacksonParser implements JsonParserAdapter {
 
     }
 
-    private static final JsonFactory JSON_FACTORY = new JsonFactory();
-    public static final JacksonParser INSTANCE = new JacksonParser(JSON_FACTORY);
+    public static final JacksonJrParser INSTANCE = new JacksonJrParser();
 
-    private JsonFactory factory;
-    private FormatSchema formatSchema;
+    private final JsonFactory factory;
 
-    public JacksonParser(JsonFactory factory) {
-        this.factory = factory;
+    public JacksonJrParser() {
+        this.factory = new JsonFactory();
     }
 
-    public JacksonParser(JsonFactory factory, FormatSchema formatSchema) {
-        this.factory = factory;
-        this.formatSchema = formatSchema;
-    }
     @Override
     public void parse(Reader reader, final SurfingContext context) {
         createResumableParser(reader, context).parse();
@@ -273,9 +266,6 @@ public class JacksonParser implements JsonParserAdapter {
     public NonBlockingParser createNonBlockingParser(SurfingContext context) {
         try {
             NonBlockingJsonParser jp = (NonBlockingJsonParser) factory.createNonBlockingByteArrayParser();
-            if (formatSchema != null) {
-                jp.setSchema(formatSchema);
-            }
             return new JacksonNonblockingParser(jp, context);
         } catch (IOException e) {
             context.getConfig().getErrorHandlingStrategy().handleParsingException(e);
@@ -284,9 +274,6 @@ public class JacksonParser implements JsonParserAdapter {
     }
 
     private JacksonResumableParser createResumableParser(final JsonParser jp, SurfingContext context) {
-        if (this.formatSchema != null) {
-            jp.setSchema(formatSchema);
-        }
         return new JacksonResumableParser(jp, context);
     }
 
