@@ -24,6 +24,7 @@
 
 package org.jsfr.json;
 
+import avro.shaded.com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import org.hamcrest.CustomMatcher;
 import org.hamcrest.Description;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -1048,6 +1050,14 @@ public abstract class JsonSurferTest {
         ValueBox<String> box1 = collector.collectOne("$.store.book[?(@.author==\"J. R. R. Tolkien\")].title", String.class);
         collector.exec();
         assertEquals("The Lord of the Rings", box1.get());
+    }
+
+    @Test
+    public void testFilterOnContextObject2() throws Exception {
+        Collector collector = surfer.collector("[1, 2, 3]");
+        ValueBox<Long> box1 = collector.collectOne("$[?(@ == 2)]", Long.class);
+        collector.exec();
+        assertEquals(Long.valueOf(2), box1.get());
     }
 
     @Test

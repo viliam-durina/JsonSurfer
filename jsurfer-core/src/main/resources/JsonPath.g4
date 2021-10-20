@@ -33,13 +33,13 @@ filterExpr : NegationOperator '(' filterExpr ')'
            | filterLtNum
            | filterExist
            ;
-filterExist:  '@' relativePath+;
-filterGtNum:  '@' relativePath+ '>' NUM;
-filterLtNum:  '@' relativePath+ '<' NUM;
-filterEqualNum: '@' relativePath+ '==' NUM;
-filterEqualBool: '@' relativePath+ '==' BOOL;
-filterEqualStr: '@' relativePath+ '==' QUOTED_STRING;
-filterMatchRegex: '@' relativePath+ '=~' REGEX;
+filterExist:  '@' relativePath*;
+filterGtNum:  '@' relativePath* '>' NUM;
+filterLtNum:  '@' relativePath* '<' NUM;
+filterEqualNum: '@' relativePath* '==' NUM;
+filterEqualBool: '@' relativePath* '==' BOOL;
+filterEqualStr: '@' relativePath* '==' QUOTED_STRING;
+filterMatchRegex: '@' relativePath* '=~' REGEX;
 //exprArrayIdx: '@.length-' NUM;
 NegationOperator: '!';
 AndOperator: '&&';

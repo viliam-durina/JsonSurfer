@@ -257,17 +257,9 @@ public class JsonPath implements Iterable<PathOperator> {
     public boolean matchFilterPath(JsonPath jsonPath) {
         int pointer1 = this.size - 1;
         int pointer2 = jsonPath.size - 1;
-        if (!get(pointer1).match(jsonPath.get(pointer2))) {
-            return false;
-        }
-        pointer1--;
-        pointer2--;
-        while (pointer1 >= 0) {
-            if (!(pointer2 >= 0)) {
-                return false;
-            }
-            PathOperator o1 = this.get(pointer1--);
-            PathOperator o2 = jsonPath.get(pointer2--);
+        for (; pointer1 >= 0 && pointer2 >= 0; pointer1--, pointer2--) {
+            PathOperator o1 = this.get(pointer1);
+            PathOperator o2 = jsonPath.get(pointer2);
             // TODO Allow deep scan in filter path?
             if (o1.getType() == PathOperator.Type.FILTER_ROOT) {
                 return true;
@@ -277,7 +269,7 @@ public class JsonPath implements Iterable<PathOperator> {
                 }
             }
         }
-        return !(pointer2 >= 0);
+        return pointer2 < 0;
     }
 
     public JsonPath derivePath(int depth) {
