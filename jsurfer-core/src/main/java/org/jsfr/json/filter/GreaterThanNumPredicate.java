@@ -35,7 +35,7 @@ import java.math.BigDecimal;
  */
 public class GreaterThanNumPredicate extends BasicJsonPathFilter {
 
-    private BigDecimal value;
+    private final BigDecimal value;
 
     public GreaterThanNumPredicate(JsonPath relativePath, BigDecimal value) {
         super(relativePath);
@@ -46,7 +46,8 @@ public class GreaterThanNumPredicate extends BasicJsonPathFilter {
     public boolean apply(JsonPath jsonPosition, PrimitiveHolder primitiveHolder, JsonProvider jsonProvider) {
         if (primitiveHolder != null && this.getRelativePath().matchFilterPath(jsonPosition)) {
             Object candidate = primitiveHolder.getValue();
-            return candidate != null && new BigDecimal(candidate.toString()).compareTo(value) > 0;
+            Integer comparison = tryCompare(candidate, value);
+            return comparison != null && comparison > 0;
         } else {
             return false;
         }

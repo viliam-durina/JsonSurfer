@@ -24,20 +24,17 @@
 
 package org.jsfr.json.filter;
 
+import java.math.BigDecimal;
+
 import org.jsfr.json.PrimitiveHolder;
 import org.jsfr.json.path.JsonPath;
 import org.jsfr.json.provider.JsonProvider;
 
-import java.math.BigDecimal;
-
-/**
- * Created by Leo on 2017/4/4.
- */
-public class LessThanNumPredicate extends BasicJsonPathFilter {
+public class GreaterOrEqualThanNumPredicate extends BasicJsonPathFilter {
 
     private final BigDecimal value;
 
-    public LessThanNumPredicate(JsonPath relativePath, BigDecimal value) {
+    public GreaterOrEqualThanNumPredicate(JsonPath relativePath, BigDecimal value) {
         super(relativePath);
         this.value = value;
     }
@@ -47,7 +44,7 @@ public class LessThanNumPredicate extends BasicJsonPathFilter {
         if (primitiveHolder != null && this.getRelativePath().matchFilterPath(jsonPosition)) {
             Object candidate = primitiveHolder.getValue();
             Integer comparison = tryCompare(candidate, value);
-            return comparison != null && comparison < 0;
+            return comparison != null && comparison >= 0;
         } else {
             return false;
         }

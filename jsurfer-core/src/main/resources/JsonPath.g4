@@ -26,19 +26,29 @@ filterExpr : NegationOperator '(' filterExpr ')'
            | filterExpr AndOperator filterExpr
            | filterExpr OrOperator filterExpr
            | filterEqualNum
+           | filterNEqualNum
            | filterEqualStr
+           | filterNEqualStr
            | filterMatchRegex
            | filterEqualBool
+           | filterNEqualBool
            | filterGtNum
+           | filterGeNum
            | filterLtNum
+           | filterLeNum
            | filterExist
            ;
 filterExist:  '@' relativePath*;
 filterGtNum:  '@' relativePath* '>' NUM;
+filterGeNum:  '@' relativePath* '>=' NUM;
 filterLtNum:  '@' relativePath* '<' NUM;
+filterLeNum:  '@' relativePath* '<=' NUM;
 filterEqualNum: '@' relativePath* '==' NUM;
+filterNEqualNum: '@' relativePath* NE NUM;
 filterEqualBool: '@' relativePath* '==' BOOL;
+filterNEqualBool: '@' relativePath* NE BOOL;
 filterEqualStr: '@' relativePath* '==' QUOTED_STRING;
+filterNEqualStr: '@' relativePath* NE QUOTED_STRING;
 filterMatchRegex: '@' relativePath* '=~' REGEX;
 //exprArrayIdx: '@.length-' NUM;
 NegationOperator: '!';
@@ -52,6 +62,7 @@ NUM
 QUOTED_STRING : ('\'' ( ~('\''|'\\') | ('\\' .) )* '\'') | ('"' ( ~('"'|'\\') | ('\\' .) )* '"');
 REGEX : '/' ( ~('/'|'\\') | ('\\' .) )* '/' [idmsuxU]*;
 BOOL: 'true'|'false';
+NE: '<>'|'!=';
 KEY :  (ESC | ~(["\\] | '.' | '*' | '[' | ']' | '(' | ')' | ',' | ':'| '=' | '@' | '?' | '&' | '|' | '>' | '<' | '\''| '!' | [ \t\n\r]))+  ;
 
 fragment INT :   '0' | [1-9] [0-9]* ; // no leading zeros
@@ -61,5 +72,3 @@ fragment UNICODE : 'u' HEX HEX HEX HEX ;
 fragment HEX : [0-9a-fA-F] ;
 
 WS  :   [ \t\n\r]+ -> skip ;
-
-

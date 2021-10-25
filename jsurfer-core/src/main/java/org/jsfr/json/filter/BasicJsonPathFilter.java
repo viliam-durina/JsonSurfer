@@ -24,6 +24,8 @@
 
 package org.jsfr.json.filter;
 
+import java.math.BigDecimal;
+
 import org.jsfr.json.path.JsonPath;
 
 public abstract class BasicJsonPathFilter extends CloneableJsonPathFilter {
@@ -43,6 +45,18 @@ public abstract class BasicJsonPathFilter extends CloneableJsonPathFilter {
         BasicJsonPathFilter cloned = (BasicJsonPathFilter) super.clone();
         cloned.relativePath = this.relativePath;
         return cloned;
+    }
+
+    protected static Integer tryCompare(Object candidate, BigDecimal value) {
+        if (candidate == null) {
+            return null;
+        }
+        try {
+            BigDecimal parsed = new BigDecimal(candidate.toString());
+            return parsed.compareTo(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
 }

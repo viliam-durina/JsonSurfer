@@ -24,20 +24,17 @@
 
 package org.jsfr.json.filter;
 
+import java.util.Objects;
+
 import org.jsfr.json.PrimitiveHolder;
 import org.jsfr.json.path.JsonPath;
 import org.jsfr.json.provider.JsonProvider;
 
-import java.math.BigDecimal;
+public class NotEqualityStrPredicate extends BasicJsonPathFilter {
 
-/**
- * Created by Leo on 2017/4/4.
- */
-public class LessThanNumPredicate extends BasicJsonPathFilter {
+    private final String value;
 
-    private final BigDecimal value;
-
-    public LessThanNumPredicate(JsonPath relativePath, BigDecimal value) {
+    public NotEqualityStrPredicate(JsonPath relativePath, String value) {
         super(relativePath);
         this.value = value;
     }
@@ -46,8 +43,7 @@ public class LessThanNumPredicate extends BasicJsonPathFilter {
     public boolean apply(JsonPath jsonPosition, PrimitiveHolder primitiveHolder, JsonProvider jsonProvider) {
         if (primitiveHolder != null && this.getRelativePath().matchFilterPath(jsonPosition)) {
             Object candidate = primitiveHolder.getValue();
-            Integer comparison = tryCompare(candidate, value);
-            return comparison != null && comparison < 0;
+            return !Objects.equals(candidate, jsonProvider.primitive(value));
         } else {
             return false;
         }

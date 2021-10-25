@@ -39,14 +39,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -1053,11 +1055,101 @@ public abstract class JsonSurferTest {
     }
 
     @Test
-    public void testFilterOnContextObject2() throws Exception {
-        Collector collector = surfer.collector("[1, 2, 3]");
-        ValueBox<Long> box1 = collector.collectOne("$[?(@ == 2)]", Long.class);
+    public void testFilterEqOnArrayElement() throws Exception {
+        // given
+        Collector collector = surfer.collector(read("array.json"));
+
+        // when
+        ValueBox<Boolean> boolVal = collector.collectOne("$[?(@ == true)]", Boolean.class);
+        ValueBox<String> stringValDoubleQuote = collector.collectOne("$[?(@ == \"abc\")]", String.class);
+        ValueBox<String> stringValSingleQuote = collector.collectOne("$[?(@ == 'abc')]", String.class);
+        ValueBox<Double> decimalVal = collector.collectOne("$[?(@ == 8.88)]", Double.class);
         collector.exec();
-        assertEquals(Long.valueOf(2), box1.get());
+
+        //then
+        assertEquals(Boolean.TRUE, boolVal.get());
+        assertEquals("abc", stringValDoubleQuote.get());
+        assertEquals("abc", stringValSingleQuote.get());
+        assertEquals(Double.valueOf(8.88d), decimalVal.get());
+    }
+
+    @Test
+    public void testFilterGtOnArrayElement() throws Exception {
+        // given
+        Collector collector = surfer.collector(read("array.json"));
+
+        // when
+        ValueBox<Double> gtVal = collector.collectOne("$[?(@ > 8)]", Double.class);
+        ValueBox<Double> geVal1 = collector.collectOne("$[?(@ >= 8.87)]", Double.class);
+        ValueBox<Double> geVal2 = collector.collectOne("$[?(@ >= 8.88)]", Double.class);
+        collector.exec();
+
+        //then
+        assertEquals(Double.valueOf(8.88d), gtVal.get());
+        assertEquals(Double.valueOf(8.88d), geVal1.get());
+        assertEquals(Double.valueOf(8.88d), geVal2.get());
+    }
+
+    @Test
+    public void testFilterLtOnArrayElement() throws Exception {
+        // given
+        Collector collector = surfer.collector(read("array.json"));
+
+        // when
+        ValueBox<Double> ltVal = collector.collectOne("$[?(@ < 9)]", Double.class);
+        ValueBox<Double> leVal1 = collector.collectOne("$[?(@ < 8.89)]", Double.class);
+        ValueBox<Double> leVal2 = collector.collectOne("$[?(@ <= 8.88)]", Double.class);
+        collector.exec();
+
+        //then
+        assertEquals(Double.valueOf(8.88d), ltVal.get());
+        assertEquals(Double.valueOf(8.88d), leVal1.get());
+        assertEquals(Double.valueOf(8.88d), leVal2.get());
+    }
+
+    @Test
+    public void testFilterNEqOnArrayBoolElement() throws Exception {
+        // given
+        Collector collector = surfer.collector(read("array.json"));
+
+        // when
+        ValueBox<Object> ne1 = collector.collectOne("$[?(@ != true)]", Object.class);
+        ValueBox<Object> ne2 = collector.collectOne("$[?(@ <> true)]", Object.class);
+        collector.exec();
+
+        //then
+        assertNotEquals(true, ne1.get());
+        assertNotEquals(true, ne2.get());
+    }
+
+    @Test
+    public void testFilterNEqOnArrayStrElement() throws Exception {
+        // given
+        Collector collector = surfer.collector(read("array.json"));
+
+        // when
+        ValueBox<Object> ne1 = collector.collectOne("$[?(@ != 'abc')]", Object.class);
+        ValueBox<Object> ne2 = collector.collectOne("$[?(@ <> 'abc')]", Object.class);
+        collector.exec();
+
+        //then
+        assertNotEquals("abc", ne1.get());
+        assertNotEquals("abc", ne2.get());
+    }
+
+    @Test
+    public void testFilterNEqOnArrayNumElement() throws Exception {
+        // given
+        Collector collector = surfer.collector(read("array.json"));
+
+        // when
+        ValueBox<Object> ne1 = collector.collectOne("$[?(@ != 8.88)]", Object.class);
+        ValueBox<Object> ne2 = collector.collectOne("$[?(@ <> 8.88)]", Object.class);
+        collector.exec();
+
+        //then
+        assertNotEquals(8.88d, ne1.get());
+        assertNotEquals(8.88d, ne2.get());
     }
 
     @Test

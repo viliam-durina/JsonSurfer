@@ -64,6 +64,13 @@
                     <listener>false</listener>
                     <outputDirectory>${basedir}/src/main/java/org/jsfr/json/compiler</outputDirectory>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!--<plugin>-->
                 <!--<groupId>org.eluder.coveralls</groupId>-->
